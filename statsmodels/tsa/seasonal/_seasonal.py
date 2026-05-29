@@ -12,6 +12,7 @@ from statsmodels.tsa.tsatools import freq_to_period
 
 __all__ = [
     "DecomposeResult",
+    "X13Result",
     "seasonal_decompose",
     "seasonal_mean",
 ]
@@ -208,7 +209,8 @@ def seasonal_decompose(
 
     results = []
     for s, name in zip(
-        (seasonal, trend, resid, x), ("seasonal", "trend", "resid", None),
+        (seasonal, trend, resid, x),
+        ("seasonal", "trend", "resid", None),
     ):
         results.append(pw.wrap(s.squeeze(), columns=name))
     return DecomposeResult(
@@ -351,3 +353,25 @@ class DecomposeResult:
 
         fig.tight_layout()
         return fig
+
+
+class X13Result(DecomposeResult):
+    """
+    An extension of the seasonal decomposition `DecomposeResult` with auxiliary X13 features.
+
+    Parameters
+    ----------
+    observed : array_like
+        The data series that has been decomposed.
+    seasonal : array_like
+        The seasonal component of the data series.
+    trend : array_like
+        The trend component of the data series.
+    resid : array_like
+        The residual component of the data series.
+    weights : array_like, optional
+        The weights used to reduce outlier influence.
+    """
+
+    def __init__(self, observed, seasonal, trend, resid, weights=None):
+        super().__init__(observed, seasonal, trend, resid, weights)
